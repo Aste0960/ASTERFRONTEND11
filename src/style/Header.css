@@ -1,0 +1,34 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background-color: #333;
+}
+
+.logo {
+  height: 40px; /* Adjust the size of the logo */
+  width: auto;  /* Maintain aspect ratio */
+  margin-right: 15px; /* Add space between logo and title */
+}
+
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+.nav-list li {
+  margin-left: 20px;
+}
+
+.nav-list li a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.nav-list li a:hover {
+  text-decoration: underline;
+}

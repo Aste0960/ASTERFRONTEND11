@@ -1,0 +1,224 @@
+/* Home.css */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+}
+
+.controls {
+  width: 300px;
+  background: #f9f9f9;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filters h4,
+.legend h4 {
+  margin-bottom: 10px;
+}
+
+.filter-group {
+  margin-bottom: 15px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.filter-group input {
+  width: 100%;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.legend {
+  margin-top: 20px;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.legend li span {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 10px;
+}
+
+.legend .red {
+  background-color: red;
+}
+
+.legend .green {
+  background-color: green;
+}
+
+.legend .purple {
+  background-color: purple;
+}
+
+/* Add this for the Previously Occurred Earthquakes circle */
+.legend .orange {
+  background-color: orange;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.map-container {
+  flex: 3; /* Map takes most of the space */
+  height: 100%;
+}
+
+.right-side-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 80px; /* Adjust according to your header height */
+  z-index: 10;
+}
+
+.legend-container {
+  margin-bottom: 10px;
+}
+
+.button-container button {
+  margin-top: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.filters-container {
+  margin-bottom: 20px;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.map-container {
+  flex: 3; /* Map takes most of the space */
+  height: 100%;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  width: 300px; /* Adjust according to design */
+  padding: 10px;
+}
+
+.button-container button {
+  margin-top: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.legend-container {
+  margin-bottom: 10px;
+}
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.map-container {
+  flex: 3;
+  height: 100%;
+}
+
+.filters-container {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  padding: 10px;
+}
+
+.legend-and-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.view-buttons {
+  margin-top: 10px;
+}
+
+.legend {
+  margin-bottom: 10px;
+}
+
+.table-view {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+.notification {
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+  border-radius: 5px;
+}
+/* Style for the orange marker */
+.orange {
+  color: orange;
+  font-size: 20px;
+  text-align: center;
+}
+
+/* Style for the red marker */
+.red {
+  color: red;
+  font-size: 20px;
+  text-align: center;
+}

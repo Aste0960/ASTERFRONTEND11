@@ -1,0 +1,81 @@
+/* Home.css */
+.app {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+
+.map-container {
+  flex: 3;
+  height: 100%;
+}
+
+.controls {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  border-left: 1px solid #ccc;
+  overflow-y: auto;
+  background-color: #f8f8f8;
+}
+
+.filters {
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  margin-bottom: 10px;
+}
+
+.filter-group label {
+  display: block;
+  font-weight: bold;
+}
+
+.legend {
+  margin-top: 20px;
+}
+
+.legend ul {
+  list-style: none;
+  padding: 0;
+}
+
+.legend li {
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.legend li span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  border-radius: 50%;
+}
+
+.red {
+  background-color: red;
+}
+
+.purple {
+  background-color: purple;
+}
+
+.green {
+  background-color: green;
+}
+
+button, input, select {
+  width: 100%;
+  padding: 5px;
+  margin: 5px 0;
+}
