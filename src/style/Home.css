@@ -139,8 +139,8 @@
 .filters-container {
   display: flex;
   flex-direction: column;
-  width: 300px; /* Adjust according to design */
-  padding: 10px;
+  width: 250px; /* Adjust according to design */
+  padding: 7px;
 }
 
 .button-container button {
@@ -166,8 +166,8 @@
 .filters-container {
   display: flex;
   flex-direction: column;
-  width: 300px;
-  padding: 10px;
+  width: 250px;
+  padding: 7px;
 }
 
 .legend-and-buttons {
@@ -221,4 +221,26 @@ th, td {
   color: red;
   font-size: 20px;
   text-align: center;
+}
+/* Ensure the map container and sidebar maintain their original layout */
+.map-container {
+  height: calc(80% - 100px); /* Reduced height to make space for the chart */
+}
+
+/* Container for the charts */
+.chart-container {
+  position: absolute;
+  bottom: 5px; /* Keep the chart at the bottom */
+  left: 30%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for perfect centering */
+  width: 80%; /* Optional: Control the width of the chart container */
+  display: flex;
+  justify-content: center;
+  gap: 3px; /* Add some space between the charts */
+}
+
+/* Style for each individual charSt section */
+.chart-section {
+  width: 48%; /* Control the size of the chart sections */
+  max-width: 400px; /* Max width for each chart */
 }

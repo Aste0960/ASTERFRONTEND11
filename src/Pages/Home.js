@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Circle, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
+import { Line } from 'react-chartjs-2'; // Importing Chart.js for the chart
+import Chart from 'chart.js/auto'; // Chart.js setup
 import '../style/Home.css';
 
 const Home = () => {
@@ -11,47 +13,47 @@ const Home = () => {
   const [viewMode, setViewMode] = useState('map'); // Control View: 'map', 'table', '3d'
   const [selectedQuake, setSelectedQuake] = useState(null); // Store the selected earthquake for 3D view
   const [filters, setFilters] = useState({
-    startYear: '',
-    endYear: '',
+    date: '', // Combined date field for year/month/day
     minMagnitude: '',
     maxMagnitude: '',
     minDepth: '',
     maxDepth: '',
   });
 
-  const fetchPreviousEarthquakes = async () => {
-    try {
-      const minLatitude = 3.4; // Southern border
-      const maxLatitude = 14.9; // Northern border
-      const minLongitude = 32.9; // Western border
-      const maxLongitude = 48.0; // Eastern border
+const fetchPreviousEarthquakes = async () => {
+  try {
+    const minLatitude = 3.0;  // Southernmost point
+    const maxLatitude = 14.4; // Northernmost point
+    const minLongitude = 34.4; // Westernmost point
+    const maxLongitude = 46.9; // Easternmost point
 
-      const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1900-01-01&endtime=${new Date().toISOString()}&minlatitude=${minLatitude}&maxlatitude=${maxLatitude}&minlongitude=${minLongitude}&maxlongitude=${maxLongitude}&orderby=time&limit=10000`;
+    const url = `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=1900-01-01&endtime=${new Date().toISOString()}&minlatitude=${minLatitude}&maxlatitude=${maxLatitude}&minlongitude=${minLongitude}&maxlongitude=${maxLongitude}&orderby=time&limit=10000`;
 
-      const response = await axios.get(url);
-      const data = response.data.features.map((feature) => {
-        const { mag, time, place } = feature.properties;
-        const [longitude, latitude, depth] = feature.geometry.coordinates;
-        
-        // Convert time to Ethiopian Time (UTC+3)
-        const ethiopianTime = new Date(time);
-        ethiopianTime.setHours(ethiopianTime.getHours() + 3); // UTC+3 for Ethiopian time
-        
-        return {
-          time: ethiopianTime,
-          magnitude: mag,
-          depth,
-          latitude,
-          longitude,
-          place: place || 'Unknown',
-        };
-      });
-      setPreviousQuakes(data);
-      setFilteredQuakes(data);  // Initially show all previous earthquakes
-    } catch (error) {
-      console.error('Error fetching previous earthquakes:', error);
-    }
-  };
+    const response = await axios.get(url);
+    const data = response.data.features.map((feature) => {
+      const { mag, time, place } = feature.properties;
+      const [longitude, latitude, depth] = feature.geometry.coordinates;
+
+      // Convert UTC time to Ethiopian Time (UTC+3)
+      const utcTime = new Date(time);
+      const ethiopianTime = new Date(utcTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours for Ethiopian Time
+
+      return {
+        time: utcTime, // Keep time in UTC
+        magnitude: mag,
+        depth,
+        latitude,
+        longitude,
+        place: place || 'Unknown',
+      };
+    });
+    setPreviousQuakes(data);
+    setFilteredQuakes(data);  // Initially show all previous earthquakes
+  } catch (error) {
+    console.error('Error fetching previous earthquakes:', error);
+  }
+};
+
 
   const fetchRealTimeEarthquakes = async () => {
     try {
@@ -62,13 +64,13 @@ const Home = () => {
       const data = response.data.features.map((feature) => {
         const { mag, time, place } = feature.properties;
         const [longitude, latitude, depth] = feature.geometry.coordinates;
-        
-        // Convert time to Ethiopian Time (UTC+3)
-        const ethiopianTime = new Date(time);
-        ethiopianTime.setHours(ethiopianTime.getHours() + 3); // UTC+3 for Ethiopian time
-        
+
+        // Convert UTC time to Ethiopian Time (UTC+3)
+        const utcTime = new Date(time);
+        const ethiopianTime = new Date(utcTime.getTime() + 3 * 60 * 60 * 1000); // Add 3 hours for Ethiopian Time
+
         return {
-          time: ethiopianTime,
+          time: utcTime, // Keep time in UTC
           magnitude: mag,
           depth,
           latitude,
@@ -93,16 +95,19 @@ const Home = () => {
   const applyFilters = () => {
     let filteredData = [...previousQuakes];
 
-    // Apply year filters
-    if (filters.startYear) {
-      filteredData = filteredData.filter(
-        (quake) => quake.time.getFullYear() >= parseInt(filters.startYear)
-      );
-    }
-    if (filters.endYear) {
-      filteredData = filteredData.filter(
-        (quake) => quake.time.getFullYear() <= parseInt(filters.endYear)
-      );
+    // Apply date filter (year/month/day combined)
+    if (filters.date) {
+      const [year, month, day] = filters.date.split('/');
+      filteredData = filteredData.filter((quake) => {
+        const quakeYear = quake.time.getUTCFullYear();
+        const quakeMonth = quake.time.getUTCMonth() + 1;
+        const quakeDay = quake.time.getUTCDate();
+        return (
+          (!year || quakeYear === parseInt(year)) &&
+          (!month || quakeMonth === parseInt(month)) &&
+          (!day || quakeDay === parseInt(day))
+        );
+      });
     }
 
     // Apply magnitude filters
@@ -147,21 +152,13 @@ const Home = () => {
     <div className="filters">
       <h4>Filters</h4>
       <div className="filter-group">
-        <label>Start Year:</label>
+        <label>Date (yy/mm/dd):</label>
         <input
-          type="number"
-          name="startYear"
-          value={filters.startYear}
+          type="text"
+          name="date"
+          value={filters.date}
           onChange={handleFilterChange}
-        />
-      </div>
-      <div className="filter-group">
-        <label>End Year:</label>
-        <input
-          type="number"
-          name="endYear"
-          value={filters.endYear}
-          onChange={handleFilterChange}
+          placeholder=""
         />
       </div>
       <div className="filter-group">
@@ -206,6 +203,33 @@ const Home = () => {
     </div>
   );
 
+  // Chart setup for previous and real-time earthquakes
+  const previousChartData = {
+    labels: previousQuakes.map((quake) => quake.time.toISOString()), // Labels are in UTC
+    datasets: [
+      {
+        label: 'Previous Earthquakes Magnitude',
+        data: previousQuakes.map((quake) => quake.magnitude),
+        borderColor: 'orange',
+        backgroundColor: 'rgba(255, 165, 0, 0.2)',
+        fill: true,
+      }
+    ]
+  };
+
+  const realTimeChartData = {
+    labels: realTimeQuakes.map((quake) => quake.time.toISOString()), // Labels are in UTC
+    datasets: [
+      {
+        label: 'Real-Time Earthquakes Magnitude',
+        data: realTimeQuakes.map((quake) => quake.magnitude),
+        borderColor: 'red',
+        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+        fill: true,
+      }
+    ]
+  };
+
   const Legend = () => (
     <div className="legend">
       <h4>Legend</h4>
@@ -225,11 +249,8 @@ const Home = () => {
       {/* Placeholder for 3D View */}
       {selectedQuake && (
         <div>
-          <h4>3D View for Earthquake</h4>
-          <p><b>Place:</b> {selectedQuake.place}</p>
-          <p><b>Magnitude:</b> {selectedQuake.magnitude}</p>
-          <p><b>Time:</b> {selectedQuake.time.toISOString()}</p>
-          <p><b>Depth:</b> {selectedQuake.depth} km</p>
+          <h4>3D View: {selectedQuake.place}</h4>
+          {/* Your 3D rendering code */}
         </div>
       )}
     </div>
@@ -237,22 +258,21 @@ const Home = () => {
 
   const renderTableView = () => (
     <div className="table-view">
-      <h4>Earthquake Data Table</h4>
       <table>
         <thead>
           <tr>
+            <th>Time (UTC)</th>
             <th>Place</th>
             <th>Magnitude</th>
-            <th>Time</th>
             <th>Depth (km)</th>
           </tr>
         </thead>
         <tbody>
-          {filteredQuakes.map((quake, index) => (
-            <tr key={index}>
+          {filteredQuakes.map((quake, idx) => (
+            <tr key={idx}>
+              <td>{quake.time.toISOString()}</td>
               <td>{quake.place}</td>
               <td>{quake.magnitude}</td>
-              <td>{quake.time.toLocaleString()}</td> {/* Time in Ethiopian Time */}
               <td>{quake.depth}</td>
             </tr>
           ))}
@@ -267,7 +287,7 @@ const Home = () => {
       <div className="content">
         <div className="map-container">
           <MapContainer
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '60%', width: '100%' }}
             center={[8.0, 38.5]}
             zoom={7}
           >
@@ -275,6 +295,7 @@ const Home = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution="&copy; OpenStreetMap contributors"
             />
+            {/* Map circles for previous and real-time earthquakes */}
             {filteredQuakes.map((quake, idx) => (
               <Circle
                 key={`prev-${idx}`}
@@ -297,7 +318,7 @@ const Home = () => {
                   <br />
                   <b>Magnitude:</b> {quake.magnitude}
                   <br />
-                  <b>Time (Ethiopian Time):</b> {quake.time.toLocaleString()}
+                  <b>Time (UTC):</b> {quake.time.toISOString()}
                   <br />
                   <b>Depth:</b> {quake.depth} km
                 </Popup>
@@ -319,7 +340,7 @@ const Home = () => {
                   <br />
                   <b>Magnitude:</b> {quake.magnitude}
                   <br />
-                  <b>Time (Ethiopian Time):</b> {quake.time.toLocaleString()}
+                  <b>Time (UTC):</b> {quake.time.toISOString()}
                   <br />
                   <b>Depth:</b> {quake.depth} km
                 </Popup>
@@ -327,20 +348,26 @@ const Home = () => {
             ))}
           </MapContainer>
         </div>
+        <div className="sidebar">
+          <button onClick={() => setViewMode('map')}>Map View</button>
+          <button onClick={() => setViewMode('table')}>Table View</button>
+          <button onClick={() => setViewMode('3d')}>3D View</button>
 
-        {/* Filters and Legend Layout */}
-        <div className="filters-container">
-          {renderFilters()}
-          <div className="legend-and-buttons">
-            <Legend />
-            {/* View Selection Buttons */}
-            <div className="view-buttons">
-              <button onClick={() => setViewMode('table')}>View as Table</button>
-              <button onClick={() => setViewMode('3d')}>3D View</button>
-            </div>
-            {/* Render table view or 3D view based on the current mode */}
-            {viewMode === 'table' && renderTableView()}
-            {viewMode === '3d' && render3DView()}
+          {viewMode === 'map' && <div>{renderFilters()}</div>}
+          {viewMode === 'table' && renderTableView()}
+          {viewMode === '3d' && render3DView()}
+
+          <Legend />
+        </div>
+        {/* Chart at the bottom center */}
+        <div className="chart-container">
+          <div className="chart-section">
+            <h4>Previous Earthquake Magnitudes</h4>
+            <Line data={previousChartData} />
+          </div>
+          <div className="chart-section">
+            <h4>Real-Time Earthquake Magnitudes</h4>
+            <Line data={realTimeChartData} />
           </div>
         </div>
       </div>
